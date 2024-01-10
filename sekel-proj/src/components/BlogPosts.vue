@@ -118,12 +118,6 @@ export default {
   text-align: left;
   width: 100%;
 }
-.left-cmt {
-  max-width: 40%;
-}
-.right-cmt {
-  max-width: 60%;
-}
 .column {
   float: left;
   width: 50%;
