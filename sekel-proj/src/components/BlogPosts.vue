@@ -33,12 +33,15 @@
             <h3 v-if="postId">Post id: {{ postId }}</h3>
           </div>
           <div class="column">
-            <h3 v-if="totalCount">
+            <h3 v-if="totalCount > 0">
               Total comments for this post : {{ totalCount }}
+            </h3>
+            <h3 v-else>
+              Total comments for this post : 0
             </h3>
           </div>
           <div class="pad20 mar-l-2 bottom-content">
-            <u v-if="postId"><b>Comments</b></u>
+            <u v-if="totalCount > 0"><b>Comments</b></u>
             <ul>
               <li v-for="comments in allComments" :key="comments.id">
                 {{ comments.body }}
@@ -62,7 +65,7 @@ export default {
       postDatas: "",
       postId: "",
       allComments: [],
-      totalCount: "",
+      totalCount: 0,
     };
   },
   mounted() {
