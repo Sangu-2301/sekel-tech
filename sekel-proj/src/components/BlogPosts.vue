@@ -1,58 +1,137 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <div>
+      <h2>{{ msg }}</h2>
+    </div>
+    <div class="row">
+      <div class="column">
+        <div class="pad20 mar-l-2 left-content">
+          <table>
+            <tr>
+              <th>Id</th>
+              <th>Title</th>
+              <th>UserId</th>
+              <th></th>
+            </tr>
+            <tr>
+              <td colspan="4"><hr /></td>
+            </tr>
+            <tr v-for="postData in postDatas.posts" :key="postData.id">
+              <td>{{ postData.id }}</td>
+              <td class="left">{{ postData.title }}</td>
+              <td>{{ postData.userId }}</td>
+              <td>
+                <button @click="userComments(postData.id)">Details</button>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="column">
+        <div class="row left">
+          <div class="column">
+            <h3 v-if="postId">Post id: {{ postId }}</h3>
+          </div>
+          <div class="column">
+            <h3 v-if="totalCount">
+              Total comments for this post : {{ totalCount }}
+            </h3>
+          </div>
+          <div class="pad20 mar-l-2 bottom-content">
+            <u v-if="postId"><b>Comments</b></u>
+            <ul>
+              <li v-for="comments in allComments" :key="comments.id">
+                {{ comments.body }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+  name: "BlogPosts",
+  props: ["msg"],
+  data() {
+    return {
+      postDatas: "",
+      postId: "",
+      allComments: [],
+      totalCount: "",
+    };
+  },
+  mounted() {
+    this.getPostData();
+  },
+  methods: {
+    async getPostData() {
+      await axios
+        .get("https://dummyjson.com/posts")
+        .then((response) => {
+          console.log(response);
+          this.postDatas = response.data;
+        })
+        .catch((error) => {
+          return error;
+        });
+    },
+    async userComments(id) {
+      this.postId = id;
+      const commentsUrl = "https://dummyjson.com/posts/" + id + "/comments";
+      await axios
+        .get(commentsUrl)
+        .then((response) => {
+          this.totalCount = response.data.comments.length;
+          this.allComments = response.data.comments;
+        })
+        .catch((error) => {
+          return error;
+        });
+    },
+  },
+};
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+.left-content {
+  max-height: 450px;
+  overflow: scroll;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+.pad20 {
+  padding-top: 20px;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+.mar-l-2 {
+  margin-left: 20px;
 }
-a {
-  color: #42b983;
+.left {
+  text-align: left;
+  padding-left: 20px;
+}
+.bottom-content {
+  padding-right: 20px;
+  float: left;
+  text-align: left;
+  width: 100%;
+}
+.left-cmt {
+  max-width: 40%;
+}
+.right-cmt {
+  max-width: 60%;
+}
+.column {
+  float: left;
+  width: 50%;
+}
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
 }
 </style>
