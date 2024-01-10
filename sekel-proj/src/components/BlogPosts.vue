@@ -1,5 +1,5 @@
 <template>
-  <div class="hello">
+  <div>
     <div>
       <h2>{{ msg }}</h2>
     </div>
@@ -73,7 +73,6 @@ export default {
       await axios
         .get("https://dummyjson.com/posts")
         .then((response) => {
-          console.log(response);
           this.postDatas = response.data;
         })
         .catch((error) => {
