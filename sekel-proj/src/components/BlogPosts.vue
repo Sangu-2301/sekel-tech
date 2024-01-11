@@ -21,7 +21,9 @@
               <td class="left">{{ postData.title }}</td>
               <td>{{ postData.userId }}</td>
               <td>
-                <button @click="userComments(postData.id)">Details</button>
+                <button @click="userComments(postData.id, postData.body)">
+                  Details
+                </button>
               </td>
             </tr>
           </table>
@@ -36,17 +38,18 @@
             <h3 v-if="totalCount > 0">
               Total comments for this post : {{ totalCount }}
             </h3>
-            <h3 v-else>
-              Total comments for this post : 0
-            </h3>
+            <h3 v-else-if="postId && totalCount <= 0">Total comments for this post : 0</h3>
           </div>
           <div class="pad20 mar-l-2 bottom-content">
-            <u v-if="totalCount > 0"><b>Comments</b></u>
-            <ul>
-              <li v-for="comments in allComments" :key="comments.id">
-                {{ comments.body }}
-              </li>
-            </ul>
+            <div class="pad-20-rt">{{ postBody }}</div>
+            <div class="pad20">
+              <u v-if="totalCount > 0"><b>Comments</b></u>
+              <ul>
+                <li v-for="comments in allComments" :key="comments.id">
+                  {{ comments.body }}
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -66,6 +69,7 @@ export default {
       postId: "",
       allComments: [],
       totalCount: 0,
+      postBody: "",
     };
   },
   mounted() {
@@ -82,7 +86,8 @@ export default {
           return error;
         });
     },
-    async userComments(id) {
+    async userComments(id, body) {
+      this.postBody = body;
       this.postId = id;
       const commentsUrl = "https://dummyjson.com/posts/" + id + "/comments";
       await axios
@@ -106,6 +111,9 @@ export default {
 }
 .pad20 {
   padding-top: 20px;
+}
+.pad-20-rt {
+  padding-right: 20px;
 }
 .mar-l-2 {
   margin-left: 20px;
